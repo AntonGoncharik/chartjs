@@ -1,0 +1,15 @@
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+#detail {
+  border: 1px solid black;
+}
+
+#slider {
+  border: 1px solid black;
+}

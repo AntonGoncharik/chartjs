@@ -1,3 +1,5 @@
-import { a } from './index1';
+import './index.css';
+import { Chart } from './chart';
+import { DATA } from './data/index';
 
-console.log(a());
+new Chart('chart', DATA).render();
