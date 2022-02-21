@@ -1,12 +1,17 @@
 body {
   display: flex;
-  align-items: center;
   justify-content: center;
   height: 100vh;
   margin: 0;
 }
 
-#detail {
+#chart {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#detailed {
   border: 1px solid black;
 }
 

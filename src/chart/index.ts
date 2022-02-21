@@ -1,39 +1,42 @@
-import { Chart as ChartI, ChartData } from './interface';
+import { ChartData } from './interface';
 import { Drawer } from '../drawer';
-import { ChartBase } from './base';
+import { Detailed } from './detailed';
+import { Slider } from './slider';
+import { LINE_WIDTH } from '../constants';
 
 export class Chart {
-  private detail!: ChartBase;
+  private detailed: Detailed;
+  private slider: Slider;
 
   constructor(chartId: string, data: ChartData) {
-    const root = document.getElementById('chart');
+    const root = document.getElementById(chartId);
 
     if (!root) {
-      throw new Error('Element with id=chart is not found');
+      throw new Error('DIV with id="chart" is not found');
     }
 
     root.innerHTML = this.getTemplate();
 
-    const detail = <HTMLCanvasElement>document.getElementById('detail');
-    const ctxDetail = <CanvasRenderingContext2D>detail.getContext('2d');
+    const detailed = <HTMLCanvasElement>document.getElementById('detailed');
+    const ctxDetailed = <CanvasRenderingContext2D>detailed.getContext('2d');
+    const slider = <HTMLCanvasElement>document.getElementById('slider');
+    const ctxSlider = <CanvasRenderingContext2D>slider.getContext('2d');
 
-    // const slider = <HTMLCanvasElement>document.getElementById('slider');
-    // const ctxSlider = slider.getContext('2d');
+    this.detailed = new Detailed(new Drawer(ctxDetailed), data);
 
-    this.detail = new ChartBase(new Drawer(ctxDetail), data);
-    // this.slider = new ChartBase(
-    //   new Drawer(<CanvasRenderingContext2D>ctxSlider),
-    //   data,
-    // );
+    const sliderDrawer = new Drawer(ctxSlider);
+    sliderDrawer.setConfig({ lineWidth: LINE_WIDTH });
+
+    this.slider = new Slider(sliderDrawer, data);
   }
 
-  getTemplate() {
-    return `<canvas id="detail" width="768" height="432" />`;
-    // return `<canvas id="detail" width="768" height="432" />
-    //   <canvas id="slider" width="768" height="48" />`;
+  private getTemplate() {
+    return `<canvas id="detailed" width="768" height="432"></canvas>
+      <canvas id="slider" width="768" height="48"></canvas>`;
   }
 
   render() {
-    this.detail.render();
+    this.detailed.render();
+    this.slider.render();
   }
 }
