@@ -17,12 +17,6 @@ export class Detailed extends Base {
         (index * this.stepX) / this.ratioX,
         this.drawer.height - 4,
       );
-
-      this.drawer.label(
-        `${index * this.stepX}`,
-        (index * this.stepX) / this.ratioX,
-        this.drawer.height - 8,
-      );
     }
 
     return this;
@@ -34,12 +28,6 @@ export class Detailed extends Base {
         0,
         this.drawer.height - (index * this.stepY) / this.ratioY,
         4,
-        this.drawer.height - (index * this.stepY) / this.ratioY,
-      );
-
-      this.drawer.label(
-        `${index * this.stepY}`,
-        8,
         this.drawer.height - (index * this.stepY) / this.ratioY,
       );
     }

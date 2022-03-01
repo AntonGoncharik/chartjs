@@ -17,16 +17,19 @@ export abstract class Base {
 
   constructor(drawer: Drawer, data: ChartData) {
     this.drawer = drawer;
+
     this.data = data;
+
     this.minX = Math.min(...this.data.x);
     this.maxX = Math.max(...this.data.x);
     this.countX = this.data.x.length;
-    this.stepX = Math.ceil((this.maxX - this.minX) / (this.countX - 1));
+    this.stepX = Math.ceil((this.maxX - this.minX) / this.countX);
     this.ratioX = (this.stepX * this.countX) / this.drawer.width;
+
     this.minY = Math.min(...this.data.dataset[0].y);
     this.maxY = Math.max(...this.data.dataset[0].y);
     this.countY = this.data.dataset[0].y.length;
-    this.stepY = Math.ceil((this.maxY - this.minY) / (this.countY - 1));
+    this.stepY = Math.ceil((this.maxY - this.minY) / this.countY);
     this.ratioY = (this.stepY * this.countY) / this.drawer.height;
   }
 
@@ -54,10 +57,10 @@ export abstract class Base {
       endIndex++;
 
       this.drawer.line(
-        Math.ceil(xStart / this.ratioX),
-        this.drawer.height - Math.ceil(yStart / this.ratioY),
-        Math.ceil(xEnd / this.ratioX),
-        this.drawer.height - Math.ceil(yEnd / this.ratioY),
+        Math.ceil((xStart - this.minX) / this.ratioX),
+        this.drawer.height - Math.ceil((yStart - this.minY) / this.ratioY),
+        Math.ceil((xEnd - this.minX) / this.ratioX),
+        this.drawer.height - Math.ceil((yEnd - this.minY) / this.ratioY),
       );
     }
 

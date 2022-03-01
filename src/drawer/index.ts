@@ -9,6 +9,9 @@ export class Drawer implements DrawerI {
     this.ctx.lineWidth = MAIN_LINE_WIDTH;
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
+    this.ctx.font = '16px serif';
+    this.ctx.textBaseline = 'middle';
+
     this.width = this.ctx.canvas.width;
     this.height = this.ctx.canvas.height;
   }
