@@ -12,14 +12,10 @@ export interface Chart {
   ratioY: number;
   render(): void;
   renderAxis(): void;
-  renderLines(): void;
+  renderGraph(): void;
 }
 
 export interface ChartData {
   x: number[];
-  dataset: {
-    y: number[];
-    label: string;
-    color: string;
-  }[];
+  y: number[];
 }

@@ -2,7 +2,6 @@ import { ChartData } from './interface';
 import { Drawer } from '../drawer';
 import { Detailed } from './detailed';
 import { Slider } from './slider';
-import { LINE_WIDTH } from '../constants';
 
 export class Chart {
   private detailed: Detailed;
@@ -17,17 +16,17 @@ export class Chart {
 
     root.innerHTML = this.getTemplate();
 
-    const detailed = <HTMLCanvasElement>document.getElementById('detailed');
-    const ctxDetailed = <CanvasRenderingContext2D>detailed.getContext('2d');
-    const slider = <HTMLCanvasElement>document.getElementById('slider');
-    const ctxSlider = <CanvasRenderingContext2D>slider.getContext('2d');
+    const ctxDetailed = <CanvasRenderingContext2D>(
+      (<HTMLCanvasElement>document.getElementById('detailed')).getContext('2d')
+    );
+    const ctxSlider = <CanvasRenderingContext2D>(
+      (<HTMLCanvasElement>document.getElementById('slider')).getContext('2d')
+    );
+
+    this.update = this.update.bind(this);
 
     this.detailed = new Detailed(new Drawer(ctxDetailed), data);
-
-    const sliderDrawer = new Drawer(ctxSlider);
-    sliderDrawer.setConfig({ lineWidth: LINE_WIDTH });
-
-    this.slider = new Slider(sliderDrawer, data);
+    this.slider = new Slider(new Drawer(ctxSlider), data, this.update);
   }
 
   private getTemplate() {
@@ -39,6 +38,10 @@ export class Chart {
           <img data-type-shift="right" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjMiIGhlaWdodD0iMzMiIHZpZXdCb3g9IjAgMCAyMyAzMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBmaWx0ZXI9InVybCgjZmlsdGVyMF9kZCkiPgogIDxyZWN0IHg9IjQuOTQ2MjkiIHk9IjEuOTk5NTEiIHdpZHRoPSIxNCIgaGVpZ2h0PSIyNSIgcng9IjciIGZpbGw9IndoaXRlIi8+CiAgPC9nPgogIDxwYXRoIGZpbGxSdWxlPSJldmVub2RkIiBjbGlwUnVsZT0iZXZlbm9kZCIgZD0iTTEwLjk0NjMgMTAuNDk5NUMxMC45NDYzIDEwLjIyMzQgMTAuNzIyNCA5Ljk5OTUxIDEwLjQ0NjMgOS45OTk1MUMxMC4xNzAxIDkuOTk5NTEgOS45NDYyOSAxMC4yMjM0IDkuOTQ2MjkgMTAuNDk5NVYxOC41MDA3QzkuOTQ2MjkgMTguNzc2OSAxMC4xNzAxIDE5LjAwMDcgMTAuNDQ2MyAxOS4wMDA3QzEwLjcyMjQgMTkuMDAwNyAxMC45NDYzIDE4Ljc3NjkgMTAuOTQ2MyAxOC41MDA3VjEwLjQ5OTVaTTEzLjk0NjMgMTAuNDk5NUMxMy45NDYzIDEwLjIyMzQgMTMuNzIyNCA5Ljk5OTUxIDEzLjQ0NjMgOS45OTk1MUMxMy4xNzAxIDkuOTk5NTEgMTIuOTQ2MyAxMC4yMjM0IDEyLjk0NjMgMTAuNDk5NVYxOC41MDA3QzEyLjk0NjMgMTguNzc2OSAxMy4xNzAxIDE5LjAwMDcgMTMuNDQ2MyAxOS4wMDA3QzEzLjcyMjQgMTkuMDAwNyAxMy45NDYzIDE4Ljc3NjkgMTMuOTQ2MyAxOC41MDA3VjEwLjQ5OTVaIiBmaWxsPSIjQTZCMEMzIi8+CiAgPGRlZnM+CiAgPGZpbHRlciBpZD0iZmlsdGVyMF9kZCIgeD0iMC45NDYyODkiIHk9Ii0wLjAwMDQ4ODI4MSIgd2lkdGg9IjIyIiBoZWlnaHQ9IjMzIiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CiAgPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KICA8ZmVDb2xvck1hdHJpeCBpbj0iU291cmNlQWxwaGEiIHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAxMjcgMCIvPgogIDxmZU9mZnNldCBkeT0iMiIvPgogIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjIiLz4KICA8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwLjM0NTA5OCAwIDAgMCAwIDAuNCAwIDAgMCAwIDAuNDk0MTE4IDAgMCAwIDAuMTIgMCIvPgogIDxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93Ii8+CiAgPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiLz4KICA8ZmVPZmZzZXQgZHk9IjEiLz4KICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIwLjUiLz4KICA8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwLjM0NTA5OCAwIDAgMCAwIDAuNCAwIDAgMCAwIDAuNDk0MTE4IDAgMCAwIDAuMTIgMCIvPgogIDxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJlZmZlY3QxX2Ryb3BTaGFkb3ciIHJlc3VsdD0iZWZmZWN0Ml9kcm9wU2hhZG93Ii8+CiAgPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJlZmZlY3QyX2Ryb3BTaGFkb3ciIHJlc3VsdD0ic2hhcGUiLz4KICA8L2ZpbHRlcj4KICA8L2RlZnM+Cjwvc3ZnPgo="/>
         </div>
       `;
+  }
+
+  private update(leftIndex: number, rightIndex: number) {
+    this.detailed.update(leftIndex, rightIndex);
   }
 
   render() {

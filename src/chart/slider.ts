@@ -2,40 +2,32 @@ import { Base } from './base';
 import { Drawer } from '../drawer';
 import { ChartData } from './interface';
 import { TYPE_SHIFT_LEFT, TYPE_SHIFT_RIGHT, TYPE_SHIFT } from '../constants';
+import { getChartRange } from '../utils';
 
 export class Slider extends Base {
   private range: HTMLElement;
   private typeShift!: string;
   private previousX!: number;
-  private left: number;
-  private right: number;
+  private xLeft: number;
+  private xRight: number;
 
-  constructor(drawer: Drawer, data: ChartData) {
+  constructor(
+    drawer: Drawer,
+    readonly data: ChartData,
+    private updateDetailed: (leftIndex: number, rightIndex: number) => void,
+  ) {
     super(drawer, data);
 
     this.range = <HTMLElement>document.getElementById('range');
 
-    this.left = 0;
-    this.right = 0;
+    this.xLeft = 0;
+    this.xRight = 0;
 
     this.handleMousedown = this.handleMousedown.bind(this);
     this.handleMousemove = this.handleMousemove.bind(this);
 
     this.range.addEventListener('mousedown', this.handleMousedown);
     document.addEventListener('mouseup', this.handleMouseup);
-  }
-
-  render() {
-    super.render();
-
-    return this;
-  }
-
-  destroy() {
-    this.range.removeEventListener('mousedown', this.handleMousedown);
-    document.removeEventListener('mouseup', this.handleMouseup);
-
-    return this;
   }
 
   private handleMousedown(e: any) {
@@ -72,34 +64,43 @@ export class Slider extends Base {
   }
 
   private leftShift(delta: number) {
-    if (this.isCorrectCoordinates(this.left + delta, this.right)) {
-      this.setCoordinates(this.left + delta, this.right);
+    if (this.isCorrectCoordinates(this.xLeft + delta, this.xRight)) {
+      this.setCoordinates(this.xLeft + delta, this.xRight);
     }
   }
 
   private rightShift(delta: number) {
-    if (this.isCorrectCoordinates(this.left, this.right - delta)) {
-      this.setCoordinates(this.left, this.right - delta);
+    if (this.isCorrectCoordinates(this.xLeft, this.xRight - delta)) {
+      this.setCoordinates(this.xLeft, this.xRight - delta);
     }
   }
 
   private rangeShift(delta: number) {
-    if (this.isCorrectCoordinates(this.left + delta, this.right - delta)) {
-      this.setCoordinates(this.left + delta, this.right - delta);
+    if (this.isCorrectCoordinates(this.xLeft + delta, this.xRight - delta)) {
+      this.setCoordinates(this.xLeft + delta, this.xRight - delta);
     }
   }
 
-  private isCorrectCoordinates(left: number, right: number) {
-    return left >= 0 && right >= 0;
+  private isCorrectCoordinates(xLeft: number, xRight: number) {
+    return xLeft >= 0 && xRight >= 0;
   }
 
-  private setCoordinates(left: number, right: number) {
-    this.left = left;
-    this.right = right;
+  private setCoordinates(xLeft: number, xRight: number) {
+    this.xLeft = xLeft;
+    this.xRight = xRight;
   }
 
   private update() {
-    this.range.style.left = `${this.left}px`;
-    this.range.style.right = `${this.right}px`;
+    this.range.style.left = `${this.xLeft}px`;
+    this.range.style.right = `${this.xRight}px`;
+
+    const { leftIndex, rightIndex } = getChartRange({
+      xLeft: this.xLeft,
+      xRight: this.xRight,
+      sliderWidth: this.drawer.width,
+      amountOfData: this.data.x.length,
+    });
+
+    this.updateDetailed(leftIndex, rightIndex);
   }
 }

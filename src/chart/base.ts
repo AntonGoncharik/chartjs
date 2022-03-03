@@ -4,6 +4,7 @@ import { ChartData } from './interface';
 export abstract class Base {
   drawer: Drawer;
   data: ChartData;
+  dynamicData: ChartData;
   minX!: number;
   maxX!: number;
   stepX!: number;
@@ -17,25 +18,31 @@ export abstract class Base {
 
   constructor(drawer: Drawer, data: ChartData) {
     this.drawer = drawer;
-
     this.data = data;
+    this.dynamicData = { x: [...data.x], y: [...data.y] };
 
-    this.minX = Math.min(...this.data.x);
-    this.maxX = Math.max(...this.data.x);
-    this.countX = this.data.x.length;
+    this.setInitialValues();
+  }
+
+  setInitialValues() {
+    this.minX = Math.min(...this.dynamicData.x);
+    this.maxX = Math.max(...this.dynamicData.x);
+    this.countX = this.dynamicData.x.length;
     this.stepX = Math.ceil((this.maxX - this.minX) / this.countX);
     this.ratioX = (this.stepX * this.countX) / this.drawer.width;
 
-    this.minY = Math.min(...this.data.dataset[0].y);
-    this.maxY = Math.max(...this.data.dataset[0].y);
-    this.countY = this.data.dataset[0].y.length;
+    this.minY = Math.min(...this.dynamicData.y);
+    this.maxY = Math.max(...this.dynamicData.y);
+    this.countY = this.dynamicData.y.length;
     this.stepY = Math.ceil((this.maxY - this.minY) / this.countY);
     this.ratioY = (this.stepY * this.countY) / this.drawer.height;
+
+    return this;
   }
 
   render() {
     this.clear();
-    this.renderLines();
+    this.renderGraph();
 
     return this;
   }
@@ -46,13 +53,13 @@ export abstract class Base {
     return this;
   }
 
-  renderLines() {
+  renderGraph() {
     let endIndex = 1;
     for (let startIndex = 0; startIndex < this.countX; startIndex++) {
-      const xStart = this.data.x[startIndex];
-      const yStart = this.data.dataset[0].y[startIndex];
-      const xEnd = this.data.x[endIndex];
-      const yEnd = this.data.dataset[0].y[endIndex];
+      const xStart = this.dynamicData.x[startIndex];
+      const yStart = this.dynamicData.y[startIndex];
+      const xEnd = this.dynamicData.x[endIndex];
+      const yEnd = this.dynamicData.y[endIndex];
 
       endIndex++;
 

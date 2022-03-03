@@ -1,23 +1,20 @@
-import { Drawer as DrawerI, DrawerConfig } from './interface';
-import { MAIN_LINE_WIDTH } from '../constants';
+import { Drawer as DrawerI } from './interface';
+import { LINE_WIDTH } from '../constants';
 
 export class Drawer implements DrawerI {
   width: number;
   height: number;
 
   constructor(private ctx: CanvasRenderingContext2D) {
-    this.ctx.lineWidth = MAIN_LINE_WIDTH;
+    this.ctx.lineWidth = LINE_WIDTH;
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
     this.ctx.font = '16px serif';
     this.ctx.textBaseline = 'middle';
+    // this.ctx.textAlign = 'right';
 
     this.width = this.ctx.canvas.width;
     this.height = this.ctx.canvas.height;
-  }
-
-  setConfig(options: DrawerConfig): void {
-    this.ctx.lineWidth = options.lineWidth ?? MAIN_LINE_WIDTH;
   }
 
   label(label: string, x: number, y: number): void {
