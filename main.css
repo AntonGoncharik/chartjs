@@ -1,0 +1,43 @@
+/*!***************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].use[2]!./src/index.css ***!
+  \***************************************************************************************************************************************/
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+#chart {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+#detailed {
+  border: 1px solid black;
+}
+
+#slider {
+  border: 1px solid black;
+}
+
+#range {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  display: flex;
+  justify-content: space-between;
+  background: rgba(56, 98, 251, 0.08);
+  cursor: move;
+}
+
+#range img[data-type-shift] {
+  cursor: e-resize;
+}
+
+
+/*# sourceMappingURL=main.css.map*/
