@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-module.exports = {
+const config = {
   entry: './src/index.ts',
   output: {
     filename: 'bundle.js',
@@ -13,7 +13,6 @@ module.exports = {
   resolve: {
     extensions: ['.ts'],
   },
-  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -45,4 +44,12 @@ module.exports = {
     }),
     new MiniCssExtractPlugin(),
   ],
+};
+
+module.exports = (env, argv) => {
+  if (argv.mode === 'development') {
+    config.devtool = 'source-map';
+  }
+
+  return config;
 };
