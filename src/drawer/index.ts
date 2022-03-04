@@ -1,5 +1,11 @@
 import { Drawer as DrawerI } from './interface';
-import { LINE_WIDTH } from '../constants';
+import {
+  LINE_WIDTH,
+  LINE_CAP,
+  LINE_JOIN,
+  FONT,
+  TEXT_BASELINE,
+} from '../constants';
 
 export class Drawer implements DrawerI {
   width: number;
@@ -7,18 +13,13 @@ export class Drawer implements DrawerI {
 
   constructor(private ctx: CanvasRenderingContext2D) {
     this.ctx.lineWidth = LINE_WIDTH;
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
-    this.ctx.font = '16px serif';
-    this.ctx.textBaseline = 'middle';
-    // this.ctx.textAlign = 'right';
+    this.ctx.lineCap = LINE_CAP;
+    this.ctx.lineJoin = LINE_JOIN;
+    this.ctx.font = FONT;
+    this.ctx.textBaseline = TEXT_BASELINE;
 
     this.width = this.ctx.canvas.width;
     this.height = this.ctx.canvas.height;
-  }
-
-  label(label: string, x: number, y: number): void {
-    this.ctx.fillText(label, x, y);
   }
 
   line(xStart: number, yStart: number, xEnd: number, yEnd: number): void {

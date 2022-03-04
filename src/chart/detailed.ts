@@ -1,6 +1,8 @@
 import { Base } from './base';
+import { Detailed as DetailedI } from './interface';
+import { getXAxisCoords, getYAxisCoords } from '../utils';
 
-export class Detailed extends Base {
+export class Detailed extends Base implements DetailedI {
   render() {
     super.render();
     this.renderXAxis().renderYAxis();
@@ -10,20 +12,14 @@ export class Detailed extends Base {
 
   renderXAxis() {
     for (let index = 1; index <= this.countX; index++) {
-      this.drawer.line(
-        (index * this.stepX) / this.ratioX,
-        this.drawer.height,
-        (index * this.stepX) / this.ratioX,
-        this.drawer.height - 4,
-      );
+      const { xStart, yStart, xEnd, yEnd } = getXAxisCoords({
+        index,
+        step: this.stepX,
+        ratio: this.ratioX,
+        height: this.drawer.height,
+      });
 
-      if (index === this.countX) {
-        this.drawer.label(
-          `${this.maxX}`,
-          (index * this.stepX) / this.ratioX,
-          this.drawer.height - 12,
-        );
-      }
+      this.drawer.line(xStart, yStart, xEnd, yEnd);
     }
 
     return this;
@@ -31,16 +27,14 @@ export class Detailed extends Base {
 
   renderYAxis() {
     for (let index = 1; index <= this.countY; index++) {
-      this.drawer.line(
-        0,
-        this.drawer.height - (index * this.stepY) / this.ratioY,
-        4,
-        this.drawer.height - (index * this.stepY) / this.ratioY,
-      );
+      const { xStart, yStart, xEnd, yEnd } = getYAxisCoords({
+        index: index,
+        step: this.stepY,
+        ratio: this.ratioY,
+        height: this.drawer.height,
+      });
 
-      if (index === this.countY) {
-        this.drawer.label(`${this.maxY}`, 12, 0);
-      }
+      this.drawer.line(xStart, yStart, xEnd, yEnd);
     }
 
     return this;

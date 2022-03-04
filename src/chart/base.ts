@@ -1,7 +1,8 @@
 import { Drawer } from '../drawer';
-import { ChartData } from './interface';
+import { Base as BaseI, ChartData } from './interface';
+import { getLineCoords, getStep, getRatio } from '../utils';
 
-export abstract class Base {
+export abstract class Base implements BaseI {
   drawer: Drawer;
   data: ChartData;
   dynamicData: ChartData;
@@ -28,21 +29,37 @@ export abstract class Base {
     this.minX = Math.min(...this.dynamicData.x);
     this.maxX = Math.max(...this.dynamicData.x);
     this.countX = this.dynamicData.x.length;
-    this.stepX = Math.ceil((this.maxX - this.minX) / this.countX);
-    this.ratioX = (this.stepX * this.countX) / this.drawer.width;
+    this.stepX = getStep({
+      max: this.maxX,
+      min: this.minX,
+      count: this.countX,
+    });
+    this.ratioX = getRatio({
+      step: this.stepX,
+      count: this.countX,
+      length: this.drawer.width,
+    });
 
     this.minY = Math.min(...this.dynamicData.y);
     this.maxY = Math.max(...this.dynamicData.y);
     this.countY = this.dynamicData.y.length;
-    this.stepY = Math.ceil((this.maxY - this.minY) / this.countY);
-    this.ratioY = (this.stepY * this.countY) / this.drawer.height;
+    this.stepY = getStep({
+      max: this.maxY,
+      min: this.minY,
+      count: this.countY,
+    });
+    this.ratioY = getRatio({
+      step: this.stepY,
+      count: this.countY,
+      length: this.drawer.height,
+    });
 
     return this;
   }
 
   render() {
     this.clear();
-    this.renderGraph();
+    this.renderLine();
 
     return this;
   }
@@ -53,22 +70,24 @@ export abstract class Base {
     return this;
   }
 
-  renderGraph() {
+  renderLine() {
     let endIndex = 1;
     for (let startIndex = 0; startIndex < this.countX; startIndex++) {
-      const xStart = this.dynamicData.x[startIndex];
-      const yStart = this.dynamicData.y[startIndex];
-      const xEnd = this.dynamicData.x[endIndex];
-      const yEnd = this.dynamicData.y[endIndex];
+      const { xStart, yStart, xEnd, yEnd } = getLineCoords({
+        xStart: this.dynamicData.x[startIndex],
+        yStart: this.dynamicData.y[startIndex],
+        xEnd: this.dynamicData.x[endIndex],
+        yEnd: this.dynamicData.y[endIndex],
+        minX: this.minX,
+        ratioX: this.ratioX,
+        minY: this.minY,
+        ratioY: this.ratioY,
+        heightChart: this.drawer.height,
+      });
+
+      this.drawer.line(xStart, yStart, xEnd, yEnd);
 
       endIndex++;
-
-      this.drawer.line(
-        Math.ceil((xStart - this.minX) / this.ratioX),
-        this.drawer.height - Math.ceil((yStart - this.minY) / this.ratioY),
-        Math.ceil((xEnd - this.minX) / this.ratioX),
-        this.drawer.height - Math.ceil((yEnd - this.minY) / this.ratioY),
-      );
     }
 
     return this;

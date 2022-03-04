@@ -1,9 +1,9 @@
-import { ChartData } from './interface';
+import { Chart as ChartI, ChartData } from './interface';
 import { Drawer } from '../drawer';
 import { Detailed } from './detailed';
 import { Slider } from './slider';
 
-export class Chart {
+export class Chart implements ChartI {
   private detailed: Detailed;
   private slider: Slider;
 

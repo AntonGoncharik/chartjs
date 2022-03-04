@@ -1,10 +1,15 @@
 import { Base } from './base';
 import { Drawer } from '../drawer';
-import { ChartData } from './interface';
-import { TYPE_SHIFT_LEFT, TYPE_SHIFT_RIGHT, TYPE_SHIFT } from '../constants';
+import { Slider as SliderI, ChartData } from './interface';
+import {
+  TYPE_SHIFT_LEFT,
+  TYPE_SHIFT_RIGHT,
+  TYPE_SHIFT,
+  MIN_WIDTH_SLIDER,
+} from '../constants';
 import { getChartRange } from '../utils';
 
-export class Slider extends Base {
+export class Slider extends Base implements SliderI {
   private range: HTMLElement;
   private typeShift!: string;
   private previousX!: number;
@@ -82,7 +87,11 @@ export class Slider extends Base {
   }
 
   private isCorrectCoordinates(xLeft: number, xRight: number) {
-    return xLeft >= 0 && xRight >= 0;
+    return (
+      xLeft >= 0 &&
+      xRight >= 0 &&
+      xLeft + xRight < this.drawer.width - MIN_WIDTH_SLIDER
+    );
   }
 
   private setCoordinates(xLeft: number, xRight: number) {
